@@ -37,7 +37,7 @@ AFPSTestCharacter::AFPSTestCharacter()
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 	isZoomedIn = false;
 	isSprinting = false;
-	FoVDefaultValue = 100.0f;
+	FoVDefaultValue = 110.0f;
 	MaxFovAddValue = 10;
 }
 
@@ -176,6 +176,9 @@ void AFPSTestCharacter::StopSprint()
 void AFPSTestCharacter::Crouch()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	if (auto firstPersonCamera = GetFirstPersonCameraComponent()) {
+		firstPersonCamera->SetFieldOfView(FoVDefaultValue);
+	}
 	GetCharacterMovement()->bWantsToCrouch = true;
 	GetCharacterMovement()->Crouch(true);
 }

@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "BaseWeaponClass.h"
 #include "TP_WeaponComponent.generated.h"
+
 
 class AFPSTestCharacter;
 
@@ -40,6 +42,26 @@ public:
 	/** Make the weapon Fire a Projectile */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int maxTotalAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int maxClipAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int totalAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int clipAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float reloadTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UTP_WeaponComponent* Weapon;
+
+	void ReloadWeapon();
 
 protected:
 	/** Ends gameplay for this component. */

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/Character.h"
+#include "FPSTestCharacter.h"
 #include "BaseWeaponClass.h"
 #include "TP_WeaponComponent.generated.h"
 
@@ -61,7 +63,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UTP_WeaponComponent* Weapon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ABaseWeaponClass* WeaponBaseClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AFPSTestCharacter* Player;
+
 	void ReloadWeapon();
+
+	
 
 protected:
 	/** Ends gameplay for this component. */

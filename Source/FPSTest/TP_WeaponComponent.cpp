@@ -21,9 +21,9 @@ void UTP_WeaponComponent::Fire()
 {
 	if(Character == nullptr || Character->GetController() == nullptr)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Character is null!"));
 		return;
 	}
-
 	// Try and fire a projectile
 	if (ProjectileClass != nullptr)
 	{
@@ -55,6 +55,21 @@ void UTP_WeaponComponent::Fire()
 					// Spawn the projectile at the muzzle
 					World->SpawnActor<AFPSTestProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 					Weapon->clipAmmo -= 1;
+					if (FireSound != nullptr)
+					{
+						UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
+					}
+
+					// Try and play a firing animation if specified
+					if (FireAnimation != nullptr)
+					{
+						// Get the animation object for the arms mesh
+						UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
+						if (AnimInstance != nullptr)
+						{
+							AnimInstance->Montage_Play(FireAnimation, 1.f);
+						}
+					}
 				}
 				else if (Weapon->totalAmmo > 0) {
 					ReloadWeapon();
@@ -65,21 +80,7 @@ void UTP_WeaponComponent::Fire()
 	}
 	
 	// Try and play the sound if specified
-	if (FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
-	}
 	
-	// Try and play a firing animation if specified
-	if (FireAnimation != nullptr)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
 }
 
 void UTP_WeaponComponent::ReloadWeapon()
@@ -113,9 +114,12 @@ void UTP_WeaponComponent::AttachWeapon(AFPSTestCharacter* TargetCharacter)
 	clipAmmo = 30;
 	maxTotalAmmo = 120;
 	totalAmmo = 90;
-	reloadTime = 2.0f;
+	reloadTime = 5.0f;
 	Weapon = this;
 	Character = TargetCharacter;
+	Player = Character;
+	/*Player->Weapon*/
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Attached Weapon!"));
 	if(Character != nullptr)
 	{
 		// Attach the weapon to the First Person Character
@@ -124,6 +128,7 @@ void UTP_WeaponComponent::AttachWeapon(AFPSTestCharacter* TargetCharacter)
 
 		// Register so that Fire is called every time the character tries to use the item being held
 		Character->OnUseItem.AddDynamic(this, &UTP_WeaponComponent::Fire);
+		Character->OnReload.AddDynamic(this, &UTP_WeaponComponent::ReloadWeapon);
 	}
 }
 

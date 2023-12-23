@@ -71,6 +71,8 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("SecondaryAction", IE_Pressed, this, &AFPSTestCharacter::Zoom);
 	PlayerInputComponent->BindAction("SecondaryAction", IE_Released, this, &AFPSTestCharacter::StopZoom);
 
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AFPSTestCharacter::Reload);
+
 	// Bind fire event
 	PlayerInputComponent->BindAction("PrimaryAction", IE_Pressed, this, &AFPSTestCharacter::OnPrimaryAction);
 
@@ -95,6 +97,9 @@ void AFPSTestCharacter::OnPrimaryAction()
 	// Trigger the OnItemUsed Event
 	OnUseItem.Broadcast();
 }
+
+
+
 
 void AFPSTestCharacter::BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
@@ -175,10 +180,9 @@ void AFPSTestCharacter::StopSprint()
 
 void AFPSTestCharacter::Crouch()
 {
+	StopZoom();
+	StopSprint();
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-	if (auto firstPersonCamera = GetFirstPersonCameraComponent()) {
-		firstPersonCamera->SetFieldOfView(FoVDefaultValue);
-	}
 	GetCharacterMovement()->bWantsToCrouch = true;
 	GetCharacterMovement()->Crouch(true);
 }
@@ -223,6 +227,11 @@ void AFPSTestCharacter::StopZoom()
 		firstPersonCamera->SetFieldOfView(FoVDefaultValue);
 		isZoomedIn = false;
 	}
+}
+
+void AFPSTestCharacter::Reload()
+{
+	OnReload.Broadcast();
 }
 
 bool AFPSTestCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)

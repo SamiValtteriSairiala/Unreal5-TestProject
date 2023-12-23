@@ -69,7 +69,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AFPSTestCharacter* Player;
 
-	void ReloadWeapon();
+	//void ReloadWeapon();
 
 	
 

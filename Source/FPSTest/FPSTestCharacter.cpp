@@ -94,8 +94,18 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void AFPSTestCharacter::OnPrimaryAction()
 {
+	if (Weapon) {
+		if (Weapon->clipAmmo > 0) {
+			Weapon->clipAmmo -= 1;
+			OnUseItem.Broadcast();
+		}
+		else if (Weapon->totalAmmo > 0) {
+			//OnReload.Broadcast();
+			Reload();
+		}
+	}
 	// Trigger the OnItemUsed Event
-	OnUseItem.Broadcast();
+	/*OnUseItem.Broadcast();*/
 }
 
 
@@ -231,7 +241,19 @@ void AFPSTestCharacter::StopZoom()
 
 void AFPSTestCharacter::Reload()
 {
-	OnReload.Broadcast();
+	if (Weapon) {
+		if (Weapon->clipAmmo != Weapon->maxClipAmmo) {
+			if (Weapon->totalAmmo - (Weapon->maxClipAmmo - Weapon->clipAmmo) >= 0) {
+				Weapon->totalAmmo -= (Weapon->maxClipAmmo - Weapon->clipAmmo);
+				Weapon->clipAmmo = Weapon->maxClipAmmo;
+			}
+			else {
+				Weapon->clipAmmo += Weapon->totalAmmo;
+				Weapon->totalAmmo = 0;
+			}
+		}
+	}
+	/*OnReload.Broadcast();*/
 }
 
 bool AFPSTestCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)

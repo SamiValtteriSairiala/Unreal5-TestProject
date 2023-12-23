@@ -29,9 +29,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float reloadTime;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ABaseWeaponClass* Weapon;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

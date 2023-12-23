@@ -30,29 +30,44 @@ void UTP_WeaponComponent::Fire()
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
 		{
-			//APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
-			//const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-			//// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			//const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+			APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+			const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 	
-			////Set Spawn Collision Handling Override
-			//FActorSpawnParameters ActorSpawnParams;
-			//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+			//Set Spawn Collision Handling Override
+			FActorSpawnParameters ActorSpawnParams;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
-			//// Spawn the projectile at the muzzle
-			//World->SpawnActor<AFPSTestProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			if (Weapon) {
+			// Spawn the projectile at the muzzle
+			World->SpawnActor<AFPSTestProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			if (FireSound != nullptr)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
+			}
+
+			// Try and play a firing animation if specified
+			if (FireAnimation != nullptr)
+			{
+				// Get the animation object for the arms mesh
+				UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
+				if (AnimInstance != nullptr)
+				{
+					AnimInstance->Montage_Play(FireAnimation, 1.f);
+				}
+			}
+			/*if (Weapon) {
 				if (Weapon->clipAmmo > 0) {
 					APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
 					const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-					// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+					 MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 					const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 
-					//Set Spawn Collision Handling Override
+					Set Spawn Collision Handling Override
 					FActorSpawnParameters ActorSpawnParams;
 					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-					// Spawn the projectile at the muzzle
+					 Spawn the projectile at the muzzle
 					World->SpawnActor<AFPSTestProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 					Weapon->clipAmmo -= 1;
 					if (FireSound != nullptr)
@@ -60,10 +75,10 @@ void UTP_WeaponComponent::Fire()
 						UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
 					}
 
-					// Try and play a firing animation if specified
+					 Try and play a firing animation if specified
 					if (FireAnimation != nullptr)
 					{
-						// Get the animation object for the arms mesh
+						 Get the animation object for the arms mesh
 						UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
 						if (AnimInstance != nullptr)
 						{
@@ -74,7 +89,7 @@ void UTP_WeaponComponent::Fire()
 				else if (Weapon->totalAmmo > 0) {
 					ReloadWeapon();
 				}
-			}
+			}*/
 
 		}
 	}
@@ -83,21 +98,21 @@ void UTP_WeaponComponent::Fire()
 	
 }
 
-void UTP_WeaponComponent::ReloadWeapon()
-{
-	if (Weapon) {
-		if (Weapon->clipAmmo != Weapon->maxClipAmmo) {
-			if (Weapon->totalAmmo - (Weapon->maxClipAmmo - Weapon->clipAmmo) >= 0) {
-				Weapon->totalAmmo -= (Weapon->maxClipAmmo - Weapon->clipAmmo);
-				Weapon->clipAmmo = Weapon->maxClipAmmo;
-			}
-			else {
-				Weapon->clipAmmo += Weapon->totalAmmo;
-				Weapon->totalAmmo = 0;
-			}
-		}
-	}
-}
+//void UTP_WeaponComponent::ReloadWeapon()
+//{
+//	if (Weapon) {
+//		if (Weapon->clipAmmo != Weapon->maxClipAmmo) {
+//			if (Weapon->totalAmmo - (Weapon->maxClipAmmo - Weapon->clipAmmo) >= 0) {
+//				Weapon->totalAmmo -= (Weapon->maxClipAmmo - Weapon->clipAmmo);
+//				Weapon->clipAmmo = Weapon->maxClipAmmo;
+//			}
+//			else {
+//				Weapon->clipAmmo += Weapon->totalAmmo;
+//				Weapon->totalAmmo = 0;
+//			}
+//		}
+//	}
+//}
 
 void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -118,7 +133,7 @@ void UTP_WeaponComponent::AttachWeapon(AFPSTestCharacter* TargetCharacter)
 	Weapon = this;
 	Character = TargetCharacter;
 	Player = Character;
-	/*Player->Weapon*/
+	//Character->Weapon = this;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Attached Weapon!"));
 	if(Character != nullptr)
 	{
@@ -128,7 +143,7 @@ void UTP_WeaponComponent::AttachWeapon(AFPSTestCharacter* TargetCharacter)
 
 		// Register so that Fire is called every time the character tries to use the item being held
 		Character->OnUseItem.AddDynamic(this, &UTP_WeaponComponent::Fire);
-		Character->OnReload.AddDynamic(this, &UTP_WeaponComponent::ReloadWeapon);
+		/*Character->OnReload.AddDynamic(this, &UTP_WeaponComponent::ReloadWeapon);*/
 	}
 }
 

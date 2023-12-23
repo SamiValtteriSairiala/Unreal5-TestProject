@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseWeaponClass.h"
 #include "FPSTestCharacter.generated.h"
 
 class UInputComponent;
@@ -16,7 +17,7 @@ class USoundBase;
 // Declaration of the delegate that will be called when the Primary Action is triggered
 // It is declared as dynamic so it can be accessed also in Blueprints
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUseItem);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReload);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReload);
 
 UCLASS(config=Game)
 class AFPSTestCharacter : public ACharacter
@@ -63,8 +64,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnUseItem OnUseItem;
 
-	UPROPERTY(BlueprintAssignable, Category = "Interaction")
-	FOnReload OnReload;
+	/*UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnReload OnReload;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSoftObjectPtr<ABaseWeaponClass> Weapon;
 protected:
 	
 	/** Fires a projectile. */
@@ -75,6 +79,7 @@ protected:
 
 	/** Handles strafing movement, left and right */
 	void MoveRight(float Val);
+
 
 	/**
 	 * Called via input to turn at a given rate.

@@ -39,6 +39,19 @@ AFPSTestCharacter::AFPSTestCharacter()
 	isSprinting = false;
 	FoVDefaultValue = 110.0f;
 	MaxFovAddValue = 10;
+	HasWeapon = false;
+
+	hasUsedAbility1 = false;
+	hasUsedAbility2 = false;
+	hasUsedAbility3 = false;
+	Ability1Duration = 3.0f;
+	Ability2Duration = 10.0f;
+	Ability3Duration = 15.0f;
+	Ability1CooldownTime = 5.0f;
+	Ability2CooldownTime = 30.0f;
+	Ability3CooldownTime = 50.0f;
+
+	Ability2Active = false;
 }
 
 void AFPSTestCharacter::BeginPlay()
@@ -71,6 +84,11 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("SecondaryAction", IE_Pressed, this, &AFPSTestCharacter::Zoom);
 	PlayerInputComponent->BindAction("SecondaryAction", IE_Released, this, &AFPSTestCharacter::StopZoom);
 
+
+	PlayerInputComponent->BindAction("ActivateAbility1", IE_Pressed, this, &AFPSTestCharacter::UseAbility1);
+	PlayerInputComponent->BindAction("ActivateAbility2", IE_Pressed, this, &AFPSTestCharacter::UseAbility2);
+	PlayerInputComponent->BindAction("ActivateAbility3", IE_Pressed, this, &AFPSTestCharacter::UseAbility3);
+
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AFPSTestCharacter::Reload);
 
 	// Bind fire event
@@ -94,9 +112,11 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void AFPSTestCharacter::OnPrimaryAction()
 {
-	if (Weapon) {
-		if (Weapon->clipAmmo > 0) {
-			Weapon->clipAmmo -= 1;
+	if (Weapon && HasWeapon) {
+		if (Weapon->clipAmmo > 0 ||  Ability2Active) {
+			if (!Ability2Active) {
+				Weapon->clipAmmo -= 1;
+			}
 			OnUseItem.Broadcast();
 		}
 		else if (Weapon->totalAmmo > 0) {
@@ -254,6 +274,63 @@ void AFPSTestCharacter::Reload()
 		}
 	}
 	/*OnReload.Broadcast();*/
+}
+
+void AFPSTestCharacter::UseAbility1()
+{
+	if (!hasUsedAbility1) {
+		if (auto firstPersonCamera = GetFirstPersonCameraComponent()) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Using ability 1!"));
+			hasUsedAbility1 = true;
+			/*GetCharacterMovement()->AddImpulse(firstPersonCamera->GetForwardVector() * 15000.0f, true);*/ // Dash ability need fixing
+			GetCharacterMovement()->JumpZVelocity = 1000.0f;
+			GetWorld()->GetTimerManager().SetTimer(ability1TimerHandle, this, &AFPSTestCharacter::ResetAbility1, Ability1Duration, false);
+		}
+	}
+}
+
+void AFPSTestCharacter::UseAbility2()
+{
+	if (!hasUsedAbility2) {
+		Ability2Active = true;
+		hasUsedAbility2 = true;
+		GetWorld()->GetTimerManager().SetTimer(ability2TimerHandle, this, &AFPSTestCharacter::ResetAbility2, Ability2Duration, false);
+	}
+}
+
+void AFPSTestCharacter::UseAbility3()
+{
+
+}
+
+void AFPSTestCharacter::ResetAbility1()
+{
+	GetCharacterMovement()->JumpZVelocity = 420.0f;
+	GetWorld()->GetTimerManager().SetTimer(ability1TimerHandle, this, &AFPSTestCharacter::Ability1CooldownComplete, Ability1CooldownTime, false);
+}
+
+void AFPSTestCharacter::ResetAbility2()
+{
+	Ability2Active = false;
+	GetWorld()->GetTimerManager().SetTimer(ability2TimerHandle, this, &AFPSTestCharacter::Ability2CooldownComplete, Ability2CooldownTime, false);
+}
+
+void AFPSTestCharacter::ResetAbility3()
+{
+}
+
+void AFPSTestCharacter::Ability1CooldownComplete()
+{
+	hasUsedAbility1 = false;
+}
+
+void AFPSTestCharacter::Ability2CooldownComplete()
+{
+	hasUsedAbility2 = false;
+}
+
+void AFPSTestCharacter::Ability3CooldownComplete()
+{
 }
 
 bool AFPSTestCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)

@@ -133,6 +133,7 @@ void UTP_WeaponComponent::AttachWeapon(AFPSTestCharacter* TargetCharacter)
 	Weapon = this;
 	Character = TargetCharacter;
 	Player = Character;
+	Player->HasWeapon = true;
 	//Character->Weapon = this;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Attached Weapon!"));
 	if(Character != nullptr)

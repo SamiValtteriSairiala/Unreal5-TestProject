@@ -58,6 +58,14 @@ public:
 	UPROPERTY(EditAnywhere)
 		int MaxFovAddValue;
 
+
+	UPROPERTY(EditAnywhere)
+		bool HasWeapon;
+
+	UPROPERTY(EditAnywhere)
+		bool Ability2Active;
+
+
 	//void ReloadWeapon();
 
 	/** Delegate to whom anyone can subscribe to receive this event */
@@ -69,6 +77,39 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSoftObjectPtr<ABaseWeaponClass> Weapon;
+
+
+	// Has character used ability?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		bool hasUsedAbility1;
+	// Has character used ability?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		bool hasUsedAbility2;
+	// Has character used ability?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		bool hasUsedAbility3;
+	// Ability Duration.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		float Ability1Duration;
+	// Ability Duration.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		float Ability2Duration;
+	// Ability Duration.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		float Ability3Duration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		float Ability1CooldownTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		float Ability2CooldownTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		float Ability3CooldownTime;
+
+	FTimerHandle ability1TimerHandle;
+	FTimerHandle ability2TimerHandle;
+	FTimerHandle ability3TimerHandle;
 protected:
 	
 	/** Fires a projectile. */
@@ -108,6 +149,18 @@ protected:
 	void StopZoom();
 
 	void Reload();
+
+	void UseAbility1();
+	void UseAbility2();
+	void UseAbility3();
+
+	void ResetAbility1();
+	void ResetAbility2();
+	void ResetAbility3();
+
+	void Ability1CooldownComplete();
+	void Ability2CooldownComplete();
+	void Ability3CooldownComplete();
 
 	struct TouchData
 	{

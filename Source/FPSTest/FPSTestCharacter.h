@@ -65,6 +65,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		bool Ability2Active;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
+		float health;
+
 
 	//void ReloadWeapon();
 
@@ -110,6 +113,18 @@ public:
 	FTimerHandle ability1TimerHandle;
 	FTimerHandle ability2TimerHandle;
 	FTimerHandle ability3TimerHandle;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Damage)
+		bool CanTakeDamageBool;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Damage)
+		float StopDamageFrame;
+
+	FTimerHandle DamageFrameTimerHandle;
+
+	UFUNCTION(BlueprintCallable)
+		void TakeDamage(float damageAmount);
 protected:
 	
 	/** Fires a projectile. */
@@ -161,6 +176,8 @@ protected:
 	void Ability1CooldownComplete();
 	void Ability2CooldownComplete();
 	void Ability3CooldownComplete();
+
+	void CanTakeDamage();
 
 	struct TouchData
 	{

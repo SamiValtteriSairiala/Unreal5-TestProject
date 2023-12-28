@@ -52,6 +52,10 @@ AFPSTestCharacter::AFPSTestCharacter()
 	Ability3CooldownTime = 50.0f;
 
 	Ability2Active = false;
+	
+	StopDamageFrame = 1.0f;
+	CanTakeDamageBool = true;
+	health = 1.0f;
 }
 
 void AFPSTestCharacter::BeginPlay()
@@ -108,6 +112,20 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &AFPSTestCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &AFPSTestCharacter::LookUpAtRate);
+}
+
+void AFPSTestCharacter::TakeDamage(float damageAmount)
+{
+	if (CanTakeDamageBool) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Taking Damage!"));
+		CanTakeDamageBool = false;
+		health -= damageAmount;
+		if (health < 0.0f) {
+			health = 0.0f;
+		}
+		GetWorld()->GetTimerManager().SetTimer(DamageFrameTimerHandle, this, &AFPSTestCharacter::CanTakeDamage, StopDamageFrame, false);
+	}
+	
 }
 
 void AFPSTestCharacter::OnPrimaryAction()
@@ -331,6 +349,11 @@ void AFPSTestCharacter::Ability2CooldownComplete()
 
 void AFPSTestCharacter::Ability3CooldownComplete()
 {
+}
+
+void AFPSTestCharacter::CanTakeDamage()
+{
+	CanTakeDamageBool = true;
 }
 
 bool AFPSTestCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)

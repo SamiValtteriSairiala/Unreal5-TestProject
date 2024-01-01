@@ -34,6 +34,12 @@ public:
 		float health;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
+		bool hasTakenDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
+		bool isDead;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 		bool isSeen;
 	// Called to bind functionality to input
 	

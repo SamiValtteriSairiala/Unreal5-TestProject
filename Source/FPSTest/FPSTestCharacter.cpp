@@ -56,6 +56,10 @@ AFPSTestCharacter::AFPSTestCharacter()
 	StopDamageFrame = 1.0f;
 	CanTakeDamageBool = true;
 	health = 1.0f;
+
+	AssaultRifleAmmo = 90;
+	PistolAmmo = 30;
+	ShotgunAmmo = 12;
 }
 
 void AFPSTestCharacter::BeginPlay()
@@ -93,7 +97,7 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("ActivateAbility2", IE_Pressed, this, &AFPSTestCharacter::UseAbility2);
 	PlayerInputComponent->BindAction("ActivateAbility3", IE_Pressed, this, &AFPSTestCharacter::UseAbility3);
 
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AFPSTestCharacter::Reload);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AFPSTestCharacter::ManualReload);
 
 	// Bind fire event
 	PlayerInputComponent->BindAction("PrimaryAction", IE_Pressed, this, &AFPSTestCharacter::OnPrimaryAction);
@@ -127,7 +131,7 @@ void AFPSTestCharacter::OnPrimaryAction()
 		}
 		else if (Weapon->totalAmmo > 0) {
 			//OnReload.Broadcast();
-			Reload();
+			Reload(Weapon->weaponType);
 		}
 	}
 	// Trigger the OnItemUsed Event
@@ -265,19 +269,24 @@ void AFPSTestCharacter::StopZoom()
 	}
 }
 
-void AFPSTestCharacter::Reload()
+void AFPSTestCharacter::Reload(EWeaponType weaponType)
 {
 	if (Weapon) {
-		if (Weapon->clipAmmo != Weapon->maxClipAmmo) {
-			if (Weapon->totalAmmo - (Weapon->maxClipAmmo - Weapon->clipAmmo) >= 0) {
-				Weapon->totalAmmo -= (Weapon->maxClipAmmo - Weapon->clipAmmo);
-				Weapon->clipAmmo = Weapon->maxClipAmmo;
-			}
-			else {
-				Weapon->clipAmmo += Weapon->totalAmmo;
-				Weapon->totalAmmo = 0;
-			}
+		switch (weaponType)
+		{
+		case EWeaponType::E_AssaultRifle:
+			AssaultRifleAmmo = CalculateAmmo(AssaultRifleAmmo);
+			break;
+		case EWeaponType::E_Pistol:
+			PistolAmmo = CalculateAmmo(PistolAmmo);
+			break;
+		case EWeaponType::E_Shotgun:
+			ShotgunAmmo = CalculateAmmo(ShotgunAmmo);
+			break;
+		default:
+			break;
 		}
+		
 	}
 	/*OnReload.Broadcast();*/
 }
@@ -339,6 +348,47 @@ void AFPSTestCharacter::Ability3CooldownComplete()
 {
 }
 
+void AFPSTestCharacter::ManualReload()
+{
+	if (Weapon) {
+		Reload(Weapon->weaponType);
+	}
+	
+}
+
+int AFPSTestCharacter::CalculateAmmo(int AmmoAmount)
+{
+	if (Weapon->clipAmmo != Weapon->maxClipAmmo) {
+		if (AmmoAmount - (Weapon->maxClipAmmo - Weapon->clipAmmo) >= 0) {
+			AmmoAmount -= (Weapon->maxClipAmmo - Weapon->clipAmmo);
+			Weapon->clipAmmo = Weapon->maxClipAmmo;
+		}
+		else {
+			Weapon->clipAmmo += AmmoAmount;
+			AmmoAmount = 0;
+		}
+	}
+	return AmmoAmount;
+}
+
+
+void AFPSTestCharacter::AddAmmo(EAmmoType ammoType, int AmmoAmount)
+{
+	switch (ammoType)
+	{
+	case EAmmoType::E_AssaultRifle:
+		AssaultRifleAmmo += AmmoAmount;
+		break;
+	case EAmmoType::E_Pistol:
+		PistolAmmo += AmmoAmount;
+		break;
+	case EAmmoType::E_Shotgun:
+		ShotgunAmmo += AmmoAmount;
+		break;
+	default:
+		break;
+	}
+}
 
 void AFPSTestCharacter::TakeDamage(float damageAmount)
 {
@@ -359,6 +409,8 @@ void AFPSTestCharacter::CanTakeDamage()
 {
 	CanTakeDamageBool = true;
 }
+
+
 
 void AFPSTestCharacter::Die()
 {

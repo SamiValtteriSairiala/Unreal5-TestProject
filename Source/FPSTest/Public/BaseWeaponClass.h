@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "BaseWeaponClass.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8 {
+	E_AssaultRifle UMETA(DisplayName = "ASSAULT_RIFLE"),
+	E_Pistol UMETA(DisplayName = "PISTOL"),
+	E_Shotgun UMETA(DisplayName = "SHOTGUN"),
+};
+
+
 UCLASS()
 class FPSTEST_API ABaseWeaponClass : public AActor
 {
@@ -28,6 +36,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float reloadTime;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+		EWeaponType weaponType;
 
 protected:
 	// Called when the game starts or when spawned

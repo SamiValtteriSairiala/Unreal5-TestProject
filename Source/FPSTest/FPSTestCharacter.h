@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BaseWeaponClass.h"
+#include "BaseAmmo.h"
 #include "FPSTestCharacter.generated.h"
 
 class UInputComponent;
@@ -128,6 +129,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void TakeDamage(float damageAmount);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+		int AssaultRifleAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+		int PistolAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+		int ShotgunAmmo;
 protected:
 	
 	/** Fires a projectile. */
@@ -166,7 +176,7 @@ protected:
 
 	void StopZoom();
 
-	void Reload();
+	void Reload(EWeaponType weaponType);
 
 	void UseAbility1();
 	void UseAbility2();
@@ -180,7 +190,14 @@ protected:
 	void Ability2CooldownComplete();
 	void Ability3CooldownComplete();
 
+	void ManualReload();
+
+	int CalculateAmmo(int AmmoAmount);
+
 	void CanTakeDamage();
+
+	UFUNCTION(BlueprintCallable)
+		void AddAmmo(EAmmoType ammoType, int AmmoAmount);
 
 	UFUNCTION(BlueprintCallable)
 		void Die();

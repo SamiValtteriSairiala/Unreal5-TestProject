@@ -14,6 +14,8 @@ ABaseWeaponClass::ABaseWeaponClass()
 	maxTotalAmmo = 120;
 	totalAmmo = 90;
 	reloadTime = 2.0f;
+
+	weaponType = EWeaponType::E_AssaultRifle;
 }
 
 // Called when the game starts or when spawned

@@ -10,6 +10,8 @@ ABaseEnemy::ABaseEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	health = 1.0f; // 1 = 100
+	hasTakenDamage = false;
+	isDead = false;
 	isSeen = false;
 }
 
@@ -25,7 +27,10 @@ void ABaseEnemy::TakeDamage(float damage)
 	health -= damage;
 	if (health <= 0.0f) {
 		health = 0.0f;
-		Destroy(true);
+		isDead = true;
+	}
+	else {
+		hasTakenDamage = true;
 	}
 }
 

@@ -65,7 +65,7 @@ void AFPSTestCharacter::BeginPlay()
 	}
 	// Call the base class  
 	Super::BeginPlay();
-
+	respawnLocation = GetActorLocation();
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -114,19 +114,7 @@ void AFPSTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &AFPSTestCharacter::LookUpAtRate);
 }
 
-void AFPSTestCharacter::TakeDamage(float damageAmount)
-{
-	if (CanTakeDamageBool) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Taking Damage!"));
-		CanTakeDamageBool = false;
-		health -= damageAmount;
-		if (health < 0.0f) {
-			health = 0.0f;
-		}
-		GetWorld()->GetTimerManager().SetTimer(DamageFrameTimerHandle, this, &AFPSTestCharacter::CanTakeDamage, StopDamageFrame, false);
-	}
-	
-}
+
 
 void AFPSTestCharacter::OnPrimaryAction()
 {
@@ -351,9 +339,36 @@ void AFPSTestCharacter::Ability3CooldownComplete()
 {
 }
 
+
+void AFPSTestCharacter::TakeDamage(float damageAmount)
+{
+	if (CanTakeDamageBool) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Taking Damage!"));
+		CanTakeDamageBool = false;
+		health -= damageAmount;
+		if (health <= 0.0f) {
+			health = 0.0f;
+			Die();
+		}
+		GetWorld()->GetTimerManager().SetTimer(DamageFrameTimerHandle, this, &AFPSTestCharacter::CanTakeDamage, StopDamageFrame, false);
+	}
+
+}
+
 void AFPSTestCharacter::CanTakeDamage()
 {
 	CanTakeDamageBool = true;
+}
+
+void AFPSTestCharacter::Die()
+{
+	Respawn();
+}
+
+void AFPSTestCharacter::Respawn()
+{
+	health = 1.0f;
+	SetActorLocation(respawnLocation);
 }
 
 bool AFPSTestCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)

@@ -68,6 +68,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
 		float health;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawning)
+		FVector respawnLocation;
+
 
 	//void ReloadWeapon();
 
@@ -178,6 +181,12 @@ protected:
 	void Ability3CooldownComplete();
 
 	void CanTakeDamage();
+
+	UFUNCTION(BlueprintCallable)
+		void Die();
+
+	UFUNCTION(BlueprintCallable)
+		void Respawn();
 
 	struct TouchData
 	{

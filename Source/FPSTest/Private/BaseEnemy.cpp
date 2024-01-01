@@ -23,6 +23,10 @@ void ABaseEnemy::BeginPlay()
 void ABaseEnemy::TakeDamage(float damage)
 {
 	health -= damage;
+	if (health <= 0.0f) {
+		health = 0.0f;
+		Destroy(true);
+	}
 }
 
 // Called every frame

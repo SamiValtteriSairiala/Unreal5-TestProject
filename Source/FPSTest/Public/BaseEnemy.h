@@ -15,12 +15,14 @@ public:
 	// Sets default values for this character's properties
 	ABaseEnemy();
 
+	UFUNCTION(BlueprintCallable)
+		void TakeDamage(float damage);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
-		void TakeDamage(float damage);
+	
 
 	
 
